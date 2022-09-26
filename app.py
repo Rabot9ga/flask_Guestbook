@@ -31,9 +31,7 @@ def create():
     return '213'
 
 
-
-
-
 if __name__ == '__main__':
+    from models import *
     db.create_all()
     app.run()
