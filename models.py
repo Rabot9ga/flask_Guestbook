@@ -2,7 +2,7 @@ from datetime import date
 from app import db
 
 
-class GuestBookItem(db.Model):
+class Guestbook(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     message_text = db.Column(db.String(300), nullable=False)
     date_message = db.Column(db.Date, default=date.today)

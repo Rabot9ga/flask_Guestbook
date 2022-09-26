@@ -1,38 +1,29 @@
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
-# from models import GuestBookItem
+import config
 from datetime import date
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///guest_book.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['WTF_CSRF_ENABLED']=False
+app.config.from_object(config)
 db = SQLAlchemy(app)
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    all_items=GuestBookItem.query.all()
+    if request.method=='POST':
+
     return '123'
 
 
+class Guestbook(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    message_text = db.Column(db.String(300), nullable=False)
+    date_message = db.Column(db.Date, default=date.today)
+    is_deleted = db.Column(db.Boolean, default=False)
+
+    def to_json(self):
+        return {'id': self.id, 'message_text': self.message_text}
+
+
 if __name__ == '__main__':
-    # db.create_all()
-    #
-    # # Deleting all records:
-    # GuestBookItem.query.delete()
-    # # # Creating new ones:
-    # ivan = GuestBookItem(message_text='Ivan')
-    # sveta = GuestBookItem(message_text='Sveta')
-    # semen = GuestBookItem(message_text='Semen')
-    # kolya = GuestBookItem(message_text='Kolya')
-    #
-    # db.session.add(ivan)
-    # db.session.add(sveta)
-    # db.session.add(kolya)
-    # db.session.add(semen)
-    #
-    # db.session.commit()
-
-
-    app.run(debug=True)
+    app.run()
