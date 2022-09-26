@@ -1,29 +1,39 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 import config
-from datetime import date
+
 
 app = Flask(__name__)
 app.config.from_object(config)
 db = SQLAlchemy(app)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    if request.method=='POST':
+    from models import Guestbook
+    all=Guestbook.query.all()
+    return jsonify({'all': [p.to_json() for p in all]})
 
-    return '123'
+@app.route('/create/', methods=['GET', 'POST'])
+def create():
+    from models import Guestbook
+    from forms import GuestForm
+    if request.method == 'POST':
+        form=GuestForm(request.form)
+        if form.validate():
+            book=Guestbook(**form.data)
+            db.session.add(book)
+            db.session.commit()
+            flash('Tuple was added!')
+        else:
+            flash('Form is not valid! Post was not created.')
+            flash(str(form.errors))
+    return '213'
 
 
-class Guestbook(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    message_text = db.Column(db.String(300), nullable=False)
-    date_message = db.Column(db.Date, default=date.today)
-    is_deleted = db.Column(db.Boolean, default=False)
 
-    def to_json(self):
-        return {'id': self.id, 'message_text': self.message_text}
 
 
 if __name__ == '__main__':
+    db.create_all()
     app.run()
