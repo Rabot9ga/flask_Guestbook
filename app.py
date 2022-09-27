@@ -12,7 +12,7 @@ db = SQLAlchemy(app)
 def index():
     from models import Guestbook
     all=Guestbook.query.all()
-    return jsonify({'all': [p.to_json() for p in all]})
+    return all[0].message()
 
 @app.route('/create/', methods=['GET', 'POST'])
 def create():

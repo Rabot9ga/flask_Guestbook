@@ -13,4 +13,5 @@ class Guestbook(db.Model):
         return {'id': self.id, 'author': self.author, 'message_text': self.message_text, 'date_message': self.date_message, 'is_deleted': self.is_deleted}
 
 
-
+    def message(self):
+        return self.message_text
